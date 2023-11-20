@@ -1,5 +1,5 @@
 // Import necessary modules
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
 import { ScrollView } from 'react-native-web';
 
@@ -10,34 +10,57 @@ const uploadImageIcon = require('./plus-icon.png');
 
 // Main component
 export default function App() {
+  let [textInputValue, settextInputValue ] = useState('')
+
+  let [mainData, setMainData] = useState(
+    [
+      {
+        text: 'Helo'
+      }
+    ]
+  )
+
+
+  function addTaskHandler(){
+    if(textInputValue === ''){
+      alert("Please Write Something in the form")
+    } else {
+      var cloneOfMainData = [...mainData];
+      var currentText = {
+        text: textInputValue
+      }
+      cloneOfMainData.push(currentText)
+      console.log(cloneOfMainData);
+      setMainData(cloneOfMainData) ;
+      settextInputValue('')
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today’s tasks</Text>
       <ScrollView style={styles.allTaskBox}>
         {/* Single task box */}
-        <View style={styles.singleTaskBox}>
-          <Image source={editImageicon} style={styles.editImageicon} />
-          <Text style={styles.tasktText}>Text will be come here</Text>
-          <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
-        </View>
-        <View style={styles.singleTaskBox}>
-          <Image source={editImageicon} style={styles.editImageicon} />
-          <Text style={styles.tasktText}>Text will be come here</Text>
-          <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
-        </View>
-        <View style={styles.singleTaskBox}>
-          <Image source={editImageicon} style={styles.editImageicon} />
-          <Text style={styles.tasktText}>Text will be come here</Text>
-          <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
-        </View>
+
+        {
+          mainData.map((x, i) => {
+            return (
+              <View style={styles.singleTaskBox}>
+                <Image source={editImageicon} style={styles.editImageicon} />
+                <Text style={styles.tasktText}>{x.text}</Text>
+                <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
+              </View>)
+          })
+        }
 
       </ScrollView>
       <View style={styles.uploadBox}>
         <TextInput
           style={styles.mainInput}
           placeholder='Write something here'
+          value={textInputValue}
+          onChange={(e)=>settextInputValue(e.target.value)}
         />
-        <View style={styles.uploadButtonbox}>
+        <View style={styles.uploadButtonbox} onPointerDown={addTaskHandler}>
           <Image source={uploadImageIcon} style={styles.uploadButton} />
         </View>
       </View>
@@ -121,7 +144,7 @@ const styles = StyleSheet.create({
   },
   uploadButton: {
     width: "100%",
-    height: "100%", 
+    height: "100%",
     flex: 1
   },
   uploadButtonbox: {
