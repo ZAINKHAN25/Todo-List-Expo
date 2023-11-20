@@ -1,7 +1,7 @@
 // Import necessary modules
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, Modal } from 'react-native';
-import { ScrollView } from 'react-native-web';
+import { StyleSheet, Text, View, Image, TextInput, Modal, ScrollView } from 'react-native';
+// import {  } from 'react-native-web';
 
 // Import image files
 const editImageicon = require('./edit-Image.png');
@@ -13,6 +13,7 @@ export default function App() {
   let [textInputValue, settextInputValue] = useState('');
   let [modalVisible, setModalVisible] = useState(false);
   let [selectedEditText, setselectedEditText] = useState('')
+  let [errtext, seterrtext] = useState('')
   let [indexofEditText ,setIndexofEditText] = useState(0)
 
   let [mainData, setMainData] = useState(
@@ -22,7 +23,8 @@ export default function App() {
 
   function addTaskHandler() {
     if (textInputValue === '') {
-      alert("Please Write Something in the form")
+      seterrtext("Please Write Something in the input")
+      setTimeout(()=>seterrtext(''), 3000)
     } else {
       var cloneOfMainData = [...mainData];
       cloneOfMainData.push(textInputValue)
@@ -82,6 +84,9 @@ export default function App() {
 
 
 
+        <Text style={styles.errtext}>
+          {errtext}
+        </Text>
       <Text style={styles.heading}>Today’s tasks</Text>
 
       <ScrollView style={styles.allTaskBox}>
@@ -90,10 +95,10 @@ export default function App() {
         {
           mainData.map((x, i) => {
             return (
-              <View style={styles.singleTaskBox}>
-                <Image source={editImageicon} onPointerDown={() => editSingleItem(i)} style={styles.editImageicon} />
+              <View style={styles.singleTaskBox} key={i}>
                 <Text style={styles.tasktText}>{x}</Text>
-                <Image source={deleteImageIcon} onPointerDown={() => deleteSingleItem(i)} style={styles.deleteImageIcon} />
+                <Image source={editImageicon} onPress={() => editSingleItem(i)} style={styles.editImageicon} />
+                <Image source={deleteImageIcon} onPress={() => deleteSingleItem(i)} style={styles.deleteImageIcon} />
               </View>)
           })
         }
@@ -103,11 +108,11 @@ export default function App() {
       <View style={styles.uploadBox}>
         <TextInput
           style={styles.mainInput}
-          placeholder='Write something here'
+          placeholder='Write something here done'
           value={textInputValue}
           onChange={(e) => settextInputValue(e.target.value)}
         />
-        <View style={styles.uploadButtonbox} onPointerDown={addTaskHandler}>
+        <View style={styles.uploadButtonbox} onPress={addTaskHandler}>
           <Image source={uploadImageIcon} style={styles.uploadButton} />
         </View>
       </View>
@@ -167,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   mainInput: {
     flex: 5,
@@ -194,10 +199,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   uploadButtonbox: {
-    justifyContent: 'center',
+    justifyContent: 'start',
     alignItems: 'center',
     padding: 10,
-    borderRadius: '50%',
+    borderRadius: 100,
     width: 50,
     height: 50,
 
@@ -256,7 +261,13 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
-    border: '1px solid black',
+    borderColor: 'black',
     fontSize: 20
   },
+
+  errtext:{
+    color: 'red',
+    flex: 0.1,
+    fontSize: 18
+  }
 });
