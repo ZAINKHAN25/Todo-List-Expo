@@ -1,6 +1,6 @@
 // Import necessary modules
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Image, TextInput, Modal } from 'react-native';
 import { ScrollView } from 'react-native-web';
 
 // Import image files
@@ -10,34 +10,80 @@ const uploadImageIcon = require('./plus-icon.png');
 
 // Main component
 export default function App() {
-  let [textInputValue, settextInputValue ] = useState('')
+  let [textInputValue, settextInputValue] = useState('');
+  let [modalVisible, setModalVisible] = useState(false);
+  let [selectedEditText, setselectedEditText] = useState('')
+  let [indexofEditText ,setIndexofEditText] = useState(0)
 
   let [mainData, setMainData] = useState(
-    [
-      {
-        text: 'Helo'
-      }
-    ]
+    ["Hello"]
   )
 
 
-  function addTaskHandler(){
-    if(textInputValue === ''){
+  function addTaskHandler() {
+    if (textInputValue === '') {
       alert("Please Write Something in the form")
     } else {
       var cloneOfMainData = [...mainData];
-      var currentText = {
-        text: textInputValue
-      }
-      cloneOfMainData.push(currentText)
+      cloneOfMainData.push(textInputValue)
       console.log(cloneOfMainData);
-      setMainData(cloneOfMainData) ;
+      setMainData(cloneOfMainData);
       settextInputValue('')
     }
   }
+
+  function deleteSingleItem(i) {
+    var cloneOfMainData = [...mainData];
+    cloneOfMainData.splice(i, 1)
+    setMainData(cloneOfMainData)
+  }
+
+  function editSingleItem(i) {
+    var cloneOfMainData = [...mainData];
+    setModalVisible(true);
+    setselectedEditText(cloneOfMainData[i])
+    setIndexofEditText(i)
+  }
+
+  function mainEditHandler() {
+    setModalVisible(!modalVisible)
+    var cloneOfMainData = [...mainData];
+    cloneOfMainData.splice(indexofEditText, 1, selectedEditText)
+    setMainData(cloneOfMainData)
+  }
+
   return (
     <View style={styles.container}>
+
+      {/* Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.modalText}
+              value={selectedEditText}
+              onChange={(e) => setselectedEditText(e.target.value)}
+            />
+            <Text
+              style={[styles.button, styles.buttonClose]}
+              onPress={mainEditHandler}>
+              <Text style={styles.textStyle}>Update It</Text>
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+
+
       <Text style={styles.heading}>Today’s tasks</Text>
+
       <ScrollView style={styles.allTaskBox}>
         {/* Single task box */}
 
@@ -45,20 +91,21 @@ export default function App() {
           mainData.map((x, i) => {
             return (
               <View style={styles.singleTaskBox}>
-                <Image source={editImageicon} style={styles.editImageicon} />
-                <Text style={styles.tasktText}>{x.text}</Text>
-                <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
+                <Image source={editImageicon} onPointerDown={() => editSingleItem(i)} style={styles.editImageicon} />
+                <Text style={styles.tasktText}>{x}</Text>
+                <Image source={deleteImageIcon} onPointerDown={() => deleteSingleItem(i)} style={styles.deleteImageIcon} />
               </View>)
           })
         }
 
       </ScrollView>
+
       <View style={styles.uploadBox}>
         <TextInput
           style={styles.mainInput}
           placeholder='Write something here'
           value={textInputValue}
-          onChange={(e)=>settextInputValue(e.target.value)}
+          onChange={(e) => settextInputValue(e.target.value)}
         />
         <View style={styles.uploadButtonbox} onPointerDown={addTaskHandler}>
           <Image source={uploadImageIcon} style={styles.uploadButton} />
@@ -77,10 +124,9 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 30,
-    fontWeight: 'bold', // fontWeight property value should be a string
+    fontWeight: 'bold',
   },
   allTaskBox: {
-    // Add styles for the allTaskBox container if needed
     marginTop: 25,
     height: '50%'
   },
@@ -104,14 +150,14 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   editImageicon: {
-    width: 30, // Adjust width as needed
-    height: 30, // Adjust height as needed
-    marginRight: 10, // Adjust margin as needed
+    width: 30,
+    height: 30,
+    marginRight: 10,
   },
   deleteImageIcon: {
-    width: 30, // Adjust width as needed
-    height: 30, // Adjust height as needed
-    marginLeft: 10, // Adjust margin as needed
+    width: 30,
+    height: 30,
+    marginLeft: 10,
   },
   tasktText: {
     flex: 15,
@@ -148,7 +194,6 @@ const styles = StyleSheet.create({
     flex: 1
   },
   uploadButtonbox: {
-    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
@@ -165,5 +210,53 @@ const styles = StyleSheet.create({
     shadowRadius: 2.22,
 
     elevation: 3,
-  }
+  },
+
+
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    backgroundColor: 'rgba( 0, 0, 0, 0.3)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 5,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 20
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    border: '1px solid black',
+    fontSize: 20
+  },
 });
