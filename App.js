@@ -1,62 +1,54 @@
-// Import necessary modules
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TextInput, Modal, ScrollView } from 'react-native';
-// import {  } from 'react-native-web';
+import { StyleSheet, Text, View, Image, TextInput, Modal, ScrollView, TouchableOpacity } from 'react-native';
 
-// Import image files
 const editImageicon = require('./edit-Image.png');
 const deleteImageIcon = require('./delete-Icon.png');
 const uploadImageIcon = require('./plus-icon.png');
 
-// Main component
 export default function App() {
   let [textInputValue, settextInputValue] = useState('');
   let [modalVisible, setModalVisible] = useState(false);
-  let [selectedEditText, setselectedEditText] = useState('')
-  let [errtext, seterrtext] = useState('')
-  let [indexofEditText ,setIndexofEditText] = useState(0)
+  let [selectedEditText, setselectedEditText] = useState('');
+  let [errtext, seterrtext] = useState('');
+  let [indexofEditText, setIndexofEditText] = useState(0);
 
-  let [mainData, setMainData] = useState(
-    ["Hello"]
-  )
-
+  let [mainData, setMainData] = useState(["Hello"]);
 
   function addTaskHandler() {
     if (textInputValue === '') {
-      seterrtext("Please Write Something in the input")
-      setTimeout(()=>seterrtext(''), 3000)
+      seterrtext('Please Write Something in the input');
+      setTimeout(() => seterrtext(''), 3000);
     } else {
       var cloneOfMainData = [...mainData];
-      cloneOfMainData.push(textInputValue)
+      cloneOfMainData.push(textInputValue);
       console.log(cloneOfMainData);
       setMainData(cloneOfMainData);
-      settextInputValue('')
+      settextInputValue('');
     }
   }
 
   function deleteSingleItem(i) {
     var cloneOfMainData = [...mainData];
-    cloneOfMainData.splice(i, 1)
-    setMainData(cloneOfMainData)
+    cloneOfMainData.splice(i, 1);
+    setMainData(cloneOfMainData);
   }
 
   function editSingleItem(i) {
     var cloneOfMainData = [...mainData];
     setModalVisible(true);
-    setselectedEditText(cloneOfMainData[i])
-    setIndexofEditText(i)
+    setselectedEditText(cloneOfMainData[i]);
+    setIndexofEditText(i);
   }
 
   function mainEditHandler() {
-    setModalVisible(!modalVisible)
+    setModalVisible(!modalVisible);
     var cloneOfMainData = [...mainData];
-    cloneOfMainData.splice(indexofEditText, 1, selectedEditText)
-    setMainData(cloneOfMainData)
+    cloneOfMainData.splice(indexofEditText, 1, selectedEditText);
+    setMainData(cloneOfMainData);
   }
 
   return (
     <View style={styles.container}>
-
       {/* Modal */}
       <Modal
         animationType="fade"
@@ -71,56 +63,51 @@ export default function App() {
             <TextInput
               style={styles.modalText}
               value={selectedEditText}
-              onChange={(e) => setselectedEditText(e.target.value)}
+              onChangeText={(text) => setselectedEditText(text)}
             />
-            <Text
-              style={[styles.button, styles.buttonClose]}
-              onPress={mainEditHandler}>
-              <Text style={styles.textStyle}>Update It</Text>
-            </Text>
+            <TouchableOpacity onPress={mainEditHandler}>
+              <Text style={[styles.button, styles.buttonClose]}>
+                <Text style={styles.textStyle}>Update It</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-
-
-        <Text style={styles.errtext}>
-          {errtext}
-        </Text>
       <Text style={styles.heading}>Today’s tasks</Text>
+      <Text style={styles.errtext}>{errtext}</Text>
 
       <ScrollView style={styles.allTaskBox}>
-        {/* Single task box */}
-
-        {
-          mainData.map((x, i) => {
-            return (
-              <View style={styles.singleTaskBox} key={i}>
-                <Text style={styles.tasktText}>{x}</Text>
-                <Image source={editImageicon} onPress={() => editSingleItem(i)} style={styles.editImageicon} />
-                <Image source={deleteImageIcon} onPress={() => deleteSingleItem(i)} style={styles.deleteImageIcon} />
-              </View>)
-          })
-        }
-
+        {mainData.map((x, i) => (
+          <View style={styles.singleTaskBox} key={i}>
+            <Text style={styles.tasktText}>{x}</Text>
+            <TouchableOpacity onPress={() => editSingleItem(i)}>
+              <Image source={editImageicon} style={styles.editImageicon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => deleteSingleItem(i)}>
+              <Image source={deleteImageIcon} style={styles.deleteImageIcon} />
+            </TouchableOpacity>
+          </View>
+        ))}
       </ScrollView>
 
       <View style={styles.uploadBox}>
         <TextInput
           style={styles.mainInput}
-          placeholder='Write something here done'
+          placeholder="Write something here done"
           value={textInputValue}
-          onChange={(e) => settextInputValue(e.target.value)}
+          onChangeText={(text) => settextInputValue(text)}
         />
-        <View style={styles.uploadButtonbox} onPress={addTaskHandler}>
-          <Image source={uploadImageIcon} style={styles.uploadButton} />
-        </View>
+        <TouchableOpacity onPress={addTaskHandler}>
+          <View style={styles.uploadButtonbox}>
+            <Image source={uploadImageIcon} style={styles.uploadButton} />
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -130,10 +117,15 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 30,
     fontWeight: 'bold',
+    marginTop: 15,
+    // height: '10%',
+    // backgroundColor: 'red'
   },
   allTaskBox: {
-    marginTop: 25,
-    height: '50%'
+    marginTop: 5,
+    height: '80%',
+    // backgroundColor: 'pink'
+    // flex: 50
   },
   singleTaskBox: {
     flexDirection: 'row',
@@ -143,15 +135,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingVertical: 10,
     borderRadius: 10,
-
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-
     elevation: 3,
   },
   editImageicon: {
@@ -166,13 +156,14 @@ const styles = StyleSheet.create({
   },
   tasktText: {
     flex: 15,
-    fontSize: 20
+    fontSize: 20,
   },
   uploadBox: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+    // backgroundColor: 'blue'
   },
   mainInput: {
     flex: 5,
@@ -182,21 +173,19 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     fontSize: 20,
     marginRight: 5,
-
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-
     elevation: 3,
   },
   uploadButton: {
-    width: "100%",
-    height: "100%",
-    flex: 1
+    width: '100%',
+    height: '100%',
+    flex: 1,
   },
   uploadButtonbox: {
     justifyContent: 'start',
@@ -205,19 +194,15 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     width: 50,
     height: 50,
-
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.82,
+    shadowOpacity: 0.22,
     shadowRadius: 2.22,
-
     elevation: 3,
   },
-
-
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -227,6 +212,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
+    width: '90%',
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
@@ -262,12 +248,18 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'center',
     borderColor: 'black',
-    fontSize: 20
+    borderWidth: 2,
+    fontSize: 20,
+    paddingHorizontal: 20
   },
 
   errtext:{
     color: 'red',
-    flex: 0.1,
-    fontSize: 18
+    fontSize: 18,
+    // paddingTop: '10%',
+    // height: '5%',
+    // flex: 0.5,
+    // marginBottom: '20%',
+    // backgroundColor: 'purple'
   }
 });
